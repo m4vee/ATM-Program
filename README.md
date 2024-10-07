@@ -13,11 +13,11 @@ Welcome to the _ATM Simulation Program_ — a simple yet robust simulation of an
 - _💸 Cash Withdrawal_  
   Withdraw cash while ensuring sufficient funds are available in the account.
 
-- \*📥 Cash Deposit\*\*  
+- _📥 Cash Deposit_ 
   Easily deposit cash and update the account balance.
 
-- \*📊 Transaction History\*\*  
+- _📊 Transaction History_
   View a detailed record of your recent transactions.
 
-- \*🔚 Session Exit\*\*  
+- _🔚 Session Exit_
   End the session securely when finished.
