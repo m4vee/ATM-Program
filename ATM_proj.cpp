@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include <fstream>
+//#include <conio.h>
 #define MAX 5
 using namespace std;
 
@@ -12,8 +13,6 @@ struct user {
 	string bday[MAX];
 	string contact[MAX];
 	int acc_bal[MAX];
-	int deposit_amount;
-	int withdraw_amount;
 	user () : MARKER(-1) {}
 };
 
@@ -27,11 +26,12 @@ class ATM {
 		void deposit(); //done
 		void fund_trans();
 		void change_pin();//1111
-		void retrieve_acc();
-		void save_acc();
+		void retrieve_acc();//done
+		void save_acc();//done
 		int search_accNum(int x);//11
 		int search_accPin(int x);//11
-
+		int main_menu();
+		int trans_menu();
 };
 
 void ATM::bal_inq(int x){
@@ -40,7 +40,6 @@ void ATM::bal_inq(int x){
 }
 
 void ATM::reg_acc(){
-	int acc_p;
 	int acc_n;
 	U.MARKER++;
 	cout << "ATM REGISTRATION\n\n";
@@ -61,13 +60,22 @@ void ATM::reg_acc(){
 
 	U.acc_num[U.MARKER] = acc_n;
 
-	/*do {
-		random_device rd;
-		mt19937 gen(rd());
+	cout << "Register Pin: "; //temporary input for PIN
+	cin >> U.pin[U.MARKER];
+	cout << "PIN Succesfully Registered" << endl;
 
-		uniform_int_distribution<> distr(1000, 9999);
-		acc_p = distr(gen);
-	} while (search_accPin(acc_p)==1);*/
+	//Original PIN input yung nasa comment
+
+	/* char pin[5];  // To store the 4-digit PIN, +1 for null terminator
+    cout << "Enter your 4-digit PIN: ";
+
+    for (int i = 0; i < 4; ++i) {
+        pin[i] = _getch();  // Capture the key press
+        cout << '*';   // Print a '' to indicate a key press
+    }
+    pin[4] = '\0';  // Null terminate the string
+
+   cout << "\nYour PIN is successfully captured.\n"; */
 
 	cout <<"ACOUNT DETAILS\n\n";
 	cout << "Acount Name: " << U.acc_name[U.MARKER] << endl;
@@ -76,6 +84,7 @@ void ATM::reg_acc(){
 	cout << "Birthday: " << U.bday[U.MARKER] << endl;
 	cout << "Contact: " << U.contact[U.MARKER] << endl;
 
+	save_acc();
 }
 
 int ATM::search_accNum(int x){
@@ -97,6 +106,7 @@ int ATM::search_accPin(int x){
 }
 
 void ATM::deposit() {
+	int deposit_amount;
     cout << "\n";
     cout << "DEPOSIT" << endl;
     cout << "Enter your account number: ";
@@ -121,24 +131,28 @@ void ATM::deposit() {
     }
 */
     cout << "Enter amount to deposit: ";
-    cin >> U.deposit_amount;
+    cin >> deposit_amount;
 
-    if (U.deposit_amount < 5000) {
+    if (deposit_amount < 5000) {
         cout << "Invalid deposit amount!" << endl;
         cout << "The minimum deposit is 5000." << endl;
-        return;}
-
-
-else {
-    cout << "Deposit successful!" << endl;
-    U.acc_bal[i] = 0;
-    U.acc_bal[i] += U.deposit_amount;
-    cout << "New Account Balance: " << U.acc_bal[i] << endl;
-}
-
+        return;
+	}
+	
+	if (deposit_amount%100 == 0){
+		cout << "Invalid deposit amount!" << endl;
+		return;
+	}
+	else {
+    		U.acc_bal[i] += deposit_amount;
+			cout << "Deposit successful!" << endl;
+    		cout << "New Account Balance: " << U.acc_bal[i] << endl;
+		
+	}
 }
 
 void ATM::withdraw(){
+	int withdraw_amount;
     cout << "\n";
     cout << "WITHDRAW" << endl;
     cout << "Enter your account number: ";
@@ -153,12 +167,12 @@ void ATM::withdraw(){
     }
 
 cout << "Enter amount to withdraw: ";
-cin >> U.withdraw_amount;
+cin >> withdraw_amount;
 
-if (U.withdraw_amount % 100 == 0){
-	if (U.withdraw_amount <= U.acc_bal[i]){
+if (withdraw_amount % 100 == 0){
+	if (withdraw_amount <= U.acc_bal[i]){
         cout << "Withdrawal Successful" << endl;
-        U.acc_bal[i] -= U.withdraw_amount;
+        U.acc_bal[i] -= withdraw_amount;
         cout << "New Account Balance: " << U.acc_bal[i] << endl;
 	}
 	 else {
@@ -220,6 +234,67 @@ void ATM::fund_trans(){
       cout << "Transfer of Funds Successful" << endl;
       cout << "New Account Balance: " << U.acc_bal[sender_index] << endl;
 }
+
+void ATM::save_acc(){
+	ofstream FILE("accounts.txt");
+
+	if(!FILE){
+		cout << "Error Opening File" << endl;
+		return;
+	}
+
+	
+	FILE << U.acc_name[U.MARKER] << ' ' << U.acc_num[U.MARKER] << ' ' << U.pin[U.MARKER] << ' ' << U.bday[U.MARKER] << ' ' << U.contact[U.MARKER] << ' ' << U.acc_bal[U.MARKER] << endl; 
+	
+	FILE.close();
+	cout << "Account Saved Successfully" << endl; //temporary cout
+}
+
+void ATM::retrieve_acc(){
+	ifstream FILE("accounts.txt");
+
+	if(!FILE){
+		cout << "Error Opening File" << endl;
+		return;
+	}
+	int i = 0;
+	while (FILE >> U.acc_name[i] >> U.acc_num[i] >> U.pin[i] >> U.bday[i] >> U.contact[i] >> U.acc_bal[i]){
+		i++;
+	}
+
+	U.MARKER = i;
+	
+	FILE.close();
+	cout << "Accounts Loaded Successfully" << endl; //temporary cout
+}
+
+int ATM::main_menu(){
+	int op;
+	cout << "ATM" << endl;
+	cout << "\n[1] Register" << endl;
+	cout << "[2] Transaction" << endl;
+	cout << "\nSelect: ";
+	cin >> op;
+
+	return op;
+}
+
+int ATM::trans_menu(){
+	int op;
+
+	cout << "TRANSACTION" << endl;
+	cout << "\n[1] Balance Inquiry" << endl;
+	cout << "[2] Withdraw" << endl;
+	cout << "[3] Deposit" << endl;
+	cout << "[4] Fund Transfer" << endl;
+	cout << "[5] Change PIN" << endl;
+	cout << "\nSelect: ";
+	cin >> op;
+
+	return op;
+}
+
+
 int main(){
 	ATM A;
 	//A.reg_acc();
