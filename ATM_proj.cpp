@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include <fstream>
+#include <unistd.h>
 //#include <conio.h>
 #define MAX 5
 using namespace std;
@@ -22,9 +23,9 @@ class ATM {
 	public:
 		void bal_inq(int x); //done
 		void reg_acc(); //done
-		void withdraw();
-		void deposit(); //done
-		void fund_trans();
+		void withdraw(int x);
+		void deposit(int x); //done
+		void fund_trans(int x);
 		void change_pin();//1111
 		void retrieve_acc();//done
 		void save_acc();//done
@@ -37,6 +38,8 @@ class ATM {
 void ATM::bal_inq(int x){
 	cout << "ATM\n\n";
 	cout << "Account Balance: " << U.acc_bal[x] << endl;
+	sleep(3);
+	return;
 }
 
 void ATM::reg_acc(){
@@ -59,6 +62,8 @@ void ATM::reg_acc(){
 	} while (search_accNum(acc_n)==1);
 
 	U.acc_num[U.MARKER] = acc_n;
+
+	U.acc_bal[U.MARKER] = 0;
 
 	cout << "Register Pin: "; //temporary input for PIN
 	cin >> U.pin[U.MARKER];
@@ -85,12 +90,13 @@ void ATM::reg_acc(){
 	cout << "Contact: " << U.contact[U.MARKER] << endl;
 
 	save_acc();
+	trans_menu();
 }
 
 int ATM::search_accNum(int x){
 	for(int i=0; i<=U.MARKER; i++){
 		if(x==U.acc_num[i]){
-			return 1;
+			return i;
 		}
 	}
 	return -1;
@@ -99,20 +105,19 @@ int ATM::search_accNum(int x){
 int ATM::search_accPin(int x){
 	for(int i=0; i<=U.MARKER; i++){
 		if(x==U.pin[i]){
-			return 1;
+			return i;
 		}
 	}
 	return -1;
 }
 
-void ATM::deposit() {
+void ATM::deposit(int x) {
 	int deposit_amount;
     cout << "\n";
-    cout << "DEPOSIT" << endl;
+    /*cout << "DEPOSIT" << endl;
     cout << "Enter your account number: ";
     int account_number;
     cin >> account_number;
-
 
     int i = search_accNum(account_number);
 
@@ -120,6 +125,7 @@ void ATM::deposit() {
         cout << "Account not found!" << endl;
         return;
     }
+	*/
 /*
     cout << "Enter your account pin: ";
     int entered_pin;
@@ -139,23 +145,23 @@ void ATM::deposit() {
         return;
 	}
 	
-	if (deposit_amount%100 == 0){
+	if (deposit_amount%100 != 0){
 		cout << "Invalid deposit amount!" << endl;
 		return;
 	}
 	else {
-    		U.acc_bal[i] += deposit_amount;
+    		U.acc_bal[x] += deposit_amount;
 			cout << "Deposit successful!" << endl;
-    		cout << "New Account Balance: " << U.acc_bal[i] << endl;
-		
+    		cout << "New Account Balance: " << U.acc_bal[x] << endl;
+			
 	}
 }
 
-void ATM::withdraw(){
+void ATM::withdraw(int x){
 	int withdraw_amount;
     cout << "\n";
     cout << "WITHDRAW" << endl;
-    cout << "Enter your account number: ";
+    /*cout << "Enter your account number: ";
     int account_number;
     cin >> account_number;
 
@@ -164,16 +170,17 @@ void ATM::withdraw(){
     if (i == -1) {
         cout << "Account not found!" << endl;
         return;
-    }
+    }*/
 
+//int i = search_accNum(account_number);
 cout << "Enter amount to withdraw: ";
 cin >> withdraw_amount;
 
 if (withdraw_amount % 100 == 0){
-	if (withdraw_amount <= U.acc_bal[i]){
+	if (withdraw_amount <= U.acc_bal[x]){
         cout << "Withdrawal Successful" << endl;
-        U.acc_bal[i] -= withdraw_amount;
-        cout << "New Account Balance: " << U.acc_bal[i] << endl;
+        U.acc_bal[x] -= withdraw_amount;
+        cout << "New Account Balance: " << U.acc_bal[x] << endl;
 	}
 	 else {
         cout << "Insufficient  Balance" << endl;
@@ -184,7 +191,7 @@ if (withdraw_amount % 100 == 0){
 	}
 }
 
-void ATM::fund_trans(){
+void ATM::fund_trans(int x){
     int sender_account_num, recipient_acc_num, fund_transfer_amount, sender_pin;
 
      cout << "\n";
@@ -236,7 +243,7 @@ void ATM::fund_trans(){
 }
 
 void ATM::save_acc(){
-	ofstream FILE("accounts.txt");
+	ofstream FILE("accounts.txt", ios::app);
 
 	if(!FILE){
 		cout << "Error Opening File" << endl;
@@ -297,9 +304,34 @@ int ATM::trans_menu(){
 
 int main(){
 	ATM A;
-	//A.reg_acc();
-	//A.deposit();
-	//A.withdraw();
-	//cout <<"worldz";
+	A.retrieve_acc();
+	int pin;
+	switch(A.main_menu()){
+		case 1:
+			A.reg_acc();
+			break;
+		case 2:
+			cout << "Enter Pin: "; //temporary input for PIN
+			cin >> pin;
+			if(A.search_accPin(pin)==-1){
+				cout << "INVALID PIN" << endl;
+				//return;
+			}
+			else {
+				//A.retrieve_acc();
+				int MARKER = A.search_accPin(pin);
+				switch(A.trans_menu()){
+					case 1:
+						A.bal_inq(MARKER);
+						break;
+					case 2:
+						A.withdraw(MARKER);
+						break;
+					case 3:
+						A.deposit(MARKER);
+						break;
+				}
+			}
+	}
 	return 0;
 }
