@@ -10,7 +10,7 @@ struct user {
 	int MARKER;
 	string acc_name[MAX];
 	int acc_num[MAX];
-	int pin[MAX];
+	string pin[MAX];
 	string bday[MAX];
 	string contact[MAX];
 	int acc_bal[MAX];
@@ -30,9 +30,10 @@ class ATM {
 		void retrieve_acc();//done
 		void save_acc();//done
 		int search_accNum(int x);//11
-		int search_accPin(int x);//11
+		int search_accPin(string x);//11
 		int main_menu();
-		int trans_menu();
+		void trans_menu(int x);
+		void save_Allacc();
 };
 
 void ATM::bal_inq(int x){
@@ -59,7 +60,7 @@ void ATM::reg_acc(){
 
 		uniform_int_distribution<> distr(10000, 99999);
 		acc_n = distr(gen);
-	} while (search_accNum(acc_n)==1);
+	} while (search_accNum(acc_n)>-1);
 
 	U.acc_num[U.MARKER] = acc_n;
 
@@ -90,7 +91,7 @@ void ATM::reg_acc(){
 	cout << "Contact: " << U.contact[U.MARKER] << endl;
 
 	save_acc();
-	trans_menu();
+	//trans_menu(U.MARKER);
 }
 
 int ATM::search_accNum(int x){
@@ -102,7 +103,7 @@ int ATM::search_accNum(int x){
 	return -1;
 }
 
-int ATM::search_accPin(int x){
+int ATM::search_accPin(string x){
 	for(int i=0; i<=U.MARKER; i++){
 		if(x==U.pin[i]){
 			return i;
@@ -192,7 +193,8 @@ if (withdraw_amount % 100 == 0){
 }
 
 void ATM::fund_trans(int x){
-    int sender_account_num, recipient_acc_num, fund_transfer_amount, sender_pin;
+    int sender_account_num, recipient_acc_num, fund_transfer_amount;
+	string sender_pin;
 
      cout << "\n";
      cout << "FUND TRANSFER" << endl;
@@ -242,6 +244,22 @@ void ATM::fund_trans(int x){
       cout << "New Account Balance: " << U.acc_bal[sender_index] << endl;
 }
 
+void ATM::save_Allacc(){
+	ofstream FILE("accounts.txt");
+
+	if(!FILE){
+		cout << "Error Opening File" << endl;
+		return;
+	}
+
+	for(int i = 0; i <= U.MARKER; i++){
+	FILE << U.acc_name[i] << ' ' << U.acc_num[i] << ' ' << U.pin[i] << ' ' << U.bday[i] << ' ' << U.contact[i] << ' ' << U.acc_bal[i] << endl; 
+	}
+
+	FILE.close();
+	cout << "Account Saved Successfully" << endl; //temporary cout
+}
+
 void ATM::save_acc(){
 	ofstream FILE("accounts.txt", ios::app);
 
@@ -250,7 +268,6 @@ void ATM::save_acc(){
 		return;
 	}
 
-	
 	FILE << U.acc_name[U.MARKER] << ' ' << U.acc_num[U.MARKER] << ' ' << U.pin[U.MARKER] << ' ' << U.bday[U.MARKER] << ' ' << U.contact[U.MARKER] << ' ' << U.acc_bal[U.MARKER] << endl; 
 	
 	FILE.close();
@@ -269,7 +286,7 @@ void ATM::retrieve_acc(){
 		i++;
 	}
 
-	U.MARKER = i;
+	U.MARKER = i - 1;
 	
 	FILE.close();
 	cout << "Accounts Loaded Successfully" << endl; //temporary cout
@@ -286,7 +303,7 @@ int ATM::main_menu(){
 	return op;
 }
 
-int ATM::trans_menu(){
+void ATM::trans_menu(int x){
 	int op;
 
 	cout << "TRANSACTION" << endl;
@@ -298,14 +315,27 @@ int ATM::trans_menu(){
 	cout << "\nSelect: ";
 	cin >> op;
 
-	return op;
+	switch(op){
+					case 1:
+						bal_inq(x);
+						break;
+					case 2:
+						withdraw(x);
+						break;
+					case 3:
+						deposit(x);
+						break;
+					case 4:
+						fund_trans(x);
+						break;
+				}
+	save_Allacc();
 }
-
 
 int main(){
 	ATM A;
 	A.retrieve_acc();
-	int pin;
+	string pin;
 	switch(A.main_menu()){
 		case 1:
 			A.reg_acc();
@@ -320,17 +350,7 @@ int main(){
 			else {
 				//A.retrieve_acc();
 				int MARKER = A.search_accPin(pin);
-				switch(A.trans_menu()){
-					case 1:
-						A.bal_inq(MARKER);
-						break;
-					case 2:
-						A.withdraw(MARKER);
-						break;
-					case 3:
-						A.deposit(MARKER);
-						break;
-				}
+				A.trans_menu(MARKER);
 			}
 	}
 	return 0;
