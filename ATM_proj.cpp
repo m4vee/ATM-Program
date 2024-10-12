@@ -1,8 +1,11 @@
+
 #include <iostream>
 #include <random>
 #include <fstream>
 #include <unistd.h>
-//#include <conio.h>
+#include <windows.h>
+#include <conio.h>
+#include <string>
 #define MAX 5
 using namespace std;
 
@@ -34,6 +37,7 @@ class ATM {
 		int main_menu();
 		void trans_menu(int x);
 		void save_Allacc();
+        bool check_flash_drive(); 
 };
 
 void ATM::bal_inq(int x){
@@ -114,29 +118,10 @@ int ATM::search_accPin(string x){
 
 void ATM::deposit(int x) {
 	int deposit_amount;
-    cout << "\n";
-    /*cout << "DEPOSIT" << endl;
-    cout << "Enter your account number: ";
-    int account_number;
-    cin >> account_number;
+	string pin;
+	char ch;
 
-    int i = search_accNum(account_number);
-
-    if (i == -1) {
-        cout << "Account not found!" << endl;
-        return;
-    }
-	*/
-/*
-    cout << "Enter your account pin: ";
-    int entered_pin;
-    cin >> entered_pin;
-
-    if (U.pin[i] != entered_pin) {
-        cout << "Invalid PIN!" << endl;
-        return;
-    }
-*/
+    //cout << "\n";
     cout << "Enter amount to deposit: ";
     cin >> deposit_amount;
 
@@ -195,7 +180,7 @@ if (withdraw_amount % 100 == 0){
 void ATM::fund_trans(int x){
     int sender_account_num, recipient_acc_num, fund_transfer_amount;
 	string sender_pin;
-
+	char ch;
      cout << "\n";
      cout << "FUND TRANSFER" << endl;
 	 
@@ -210,6 +195,12 @@ void ATM::fund_trans(int x){
 
       cout << "Enter your account PIN: ";
       cin >> sender_pin;
+	  for (int i = 0; i < 4; ++i) {
+        ch = _getch();   
+        sender_pin += ch;
+        cout << '*';     
+    }
+    cout << "\n";
       if (U.pin[sender_index] != sender_pin){
             cout << "Invalid PIN!" << endl;
             return;
@@ -244,6 +235,58 @@ void ATM::fund_trans(int x){
       cout << "New Account Balance: " << U.acc_bal[sender_index] << endl;
 }
 
+void ATM::change_pin() {
+    string current_pin, new_pin, confirm_newPIN;
+
+    cout << "Enter your current PIN number: ";
+    char ch;
+    for (int i = 0; i < 4; ++i) {
+        ch = _getch();   
+        current_pin += ch;
+        cout << '*';     
+    }
+    cout << "\n";  
+
+    int i = search_accPin(current_pin);
+    if (i == -1) {
+        cout << "Invalid PIN number!" << endl;
+        return;
+    }
+
+    cout << "Enter your new PIN code: ";
+    for (int i = 0; i < 4; ++i) {
+        ch = _getch();   // Capture key press
+        new_pin += ch;
+        cout << '*';     // Print asterisks for each key press
+    }
+    cout << "\n";  // Move to the next line after input
+
+    cout << "Confirm your new PIN code: ";
+    for (int i = 0; i < 4; ++i) {
+        ch = _getch();   
+        confirm_newPIN += ch;
+        cout << '*';     
+    }
+    cout << "\n";  
+
+    if (new_pin == confirm_newPIN) {
+        U.pin[i] = new_pin;  
+        cout << "Congratulations, you have successfully changed your PIN!" << endl;
+    } else {
+        cout << "Error: Your PINs do not match!" << endl;
+    }
+}
+
+bool ATM::check_flash_drive() {
+	// Checking if the D: drive exists (assuming this is the flash drive for ATM)
+	DWORD drive = GetLogicalDrives(); // Get the bitmask of available drives
+
+	if (!(drive & (1 << 3))) { // 1 << 3 checks if the 4th drive (D:) exists
+		cout << "Please insert your ATM (Flash Drive) into D: drive!" << endl;
+		return false;
+	}
+	return true;
+}
 void ATM::save_Allacc(){
 	ofstream FILE("accounts.txt");
 
@@ -328,6 +371,15 @@ void ATM::trans_menu(int x){
 					case 4:
 						fund_trans(x);
 						break;
+                    case 5:
+                        change_pin();
+                        break;
+                    case 6:
+                        cout<<"Thank you for using our program";
+                        exit(0);
+                    default: 
+                        cout<<"Invalid Input!";
+                        break;
 				}
 	save_Allacc();
 }
@@ -341,17 +393,17 @@ int main(){
 			A.reg_acc();
 			break;
 		case 2:
-			cout << "Enter Pin: "; //temporary input for PIN
+			cout << "Enter Pin: "; 
 			cin >> pin;
 			if(A.search_accPin(pin)==-1){
 				cout << "INVALID PIN" << endl;
-				//return;
+				
 			}
 			else {
-				//A.retrieve_acc();
 				int MARKER = A.search_accPin(pin);
 				A.trans_menu(MARKER);
 			}
 	}
 	return 0;
 }
+
