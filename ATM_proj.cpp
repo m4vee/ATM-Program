@@ -3,8 +3,8 @@
 #include <random>
 #include <fstream>
 #include <unistd.h>
-#include <windows.h>
-#include <conio.h>
+//#include <windows.h>
+//#include <conio.h>
 #include <string>
 #define MAX 5
 using namespace std;
@@ -38,6 +38,7 @@ class ATM {
 		void trans_menu(int x);
 		void save_Allacc();
         bool check_flash_drive(); 
+		void save_card();
 };
 
 void ATM::bal_inq(int x){
@@ -195,11 +196,11 @@ void ATM::fund_trans(int x){
 
       cout << "Enter your account PIN: ";
       cin >> sender_pin;
-	  for (int i = 0; i < 4; ++i) {
-        ch = _getch();   
+	  /*for (int i = 0; i < 4; ++i) {
+        // temp comment ch = _getch();   
         sender_pin += ch;
         cout << '*';     
-    }
+    }*/
     cout << "\n";
       if (U.pin[sender_index] != sender_pin){
             cout << "Invalid PIN!" << endl;
@@ -241,7 +242,7 @@ void ATM::change_pin() {
     cout << "Enter your current PIN number: ";
     char ch;
     for (int i = 0; i < 4; ++i) {
-        ch = _getch();   
+        // temp comment ch = _getch();   
         current_pin += ch;
         cout << '*';     
     }
@@ -255,7 +256,7 @@ void ATM::change_pin() {
 
     cout << "Enter your new PIN code: ";
     for (int i = 0; i < 4; ++i) {
-        ch = _getch();   // Capture key press
+        // temp comment ch = _getch();   // Capture key press
         new_pin += ch;
         cout << '*';     // Print asterisks for each key press
     }
@@ -263,7 +264,7 @@ void ATM::change_pin() {
 
     cout << "Confirm your new PIN code: ";
     for (int i = 0; i < 4; ++i) {
-        ch = _getch();   
+        // temp comment ch = _getch();   
         confirm_newPIN += ch;
         cout << '*';     
     }
@@ -279,14 +280,29 @@ void ATM::change_pin() {
 
 bool ATM::check_flash_drive() {
 	// Checking if the D: drive exists (assuming this is the flash drive for ATM)
-	DWORD drive = GetLogicalDrives(); // Get the bitmask of available drives
+	// temp comment DWORD drive = GetLogicalDrives(); // Get the bitmask of available drives
 
-	if (!(drive & (1 << 3))) { // 1 << 3 checks if the 4th drive (D:) exists
+	// temp comment if (!(drive & (1 << 3))) { // 1 << 3 checks if the 4th drive (D:) exists
 		cout << "Please insert your ATM (Flash Drive) into D: drive!" << endl;
 		return false;
 	}
-	return true;
+	// temp comment return true;
+// temp comment }
+
+void ATM::save_card(){
+	string FILE = "D:\\accounts.txt";
+
+	ofstream outFile(FILE);
+
+	if(!outFile){
+		cout << "File not found" << endl;
+		return;
+	}
+	outFile << U.acc_name[U.MARKER] << ' ' << U.acc_num[U.MARKER] << ' ' << U.pin[U.MARKER] << ' ' << U.bday[U.MARKER] << ' ' <<  U.contact[U.MARKER] << ' ' << U.acc_bal[U.MARKER] << endl;
+
+	outFile.close();
 }
+
 void ATM::save_Allacc(){
 	ofstream FILE("accounts.txt");
 
@@ -361,21 +377,32 @@ void ATM::trans_menu(int x){
 	switch(op){
 					case 1:
 						bal_inq(x);
+						trans_menu(x);
 						break;
 					case 2:
 						withdraw(x);
+						sleep(3);
+						trans_menu(x);
 						break;
 					case 3:
 						deposit(x);
+						sleep(3);
+						trans_menu(x);
 						break;
 					case 4:
 						fund_trans(x);
+						sleep(3);
+						trans_menu(x);
 						break;
                     case 5:
                         change_pin();
+						sleep(3);
+						trans_menu(x);
                         break;
                     case 6:
                         cout<<"Thank you for using our program";
+						save_Allacc();
+						sleep(3);
                         exit(0);
                     default: 
                         cout<<"Invalid Input!";
@@ -389,6 +416,7 @@ int main(){
 	A.retrieve_acc();
 	string pin;
 	char  ch;
+	int i;
 	switch(A.main_menu()){
 		case 1:
 			A.reg_acc();
@@ -396,12 +424,12 @@ int main(){
 		case 2:
 			cout << "Enter Pin: "; 
 			cin >> pin;
-			for(i=0;i<4;i++){
-				ch = _getch();
+			/*for(i=0;i<4;i++){
+				//ch = _getch();
 				pin += ch;
 				cout<<'*';
 			}
-			cout<<"/n";
+			cout<<"/n";*/
 	}
 			if(A.search_accPin(pin)==-1){
 				cout << "INVALID PIN" << endl;
@@ -411,7 +439,6 @@ int main(){
 				int MARKER = A.search_accPin(pin);
 				A.trans_menu(MARKER);
 			}
-	}
+	
 	return 0;
 }
-
