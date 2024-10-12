@@ -24,16 +24,16 @@ class ATM {
 	private:
 		user U;
 	public:
-		void bal_inq(int x); //done
-		void reg_acc(); //done
+		void bal_inq(int x); 
+		void reg_acc(); 
 		void withdraw(int x);
-		void deposit(int x); //done
+		void deposit(int x); 
 		void fund_trans(int x);
-		void change_pin();//1111
-		void retrieve_acc();//done
-		void save_acc();//done
-		int search_accNum(int x);//11
-		int search_accPin(string x);//11
+		void change_pin();
+		void retrieve_acc();
+		void save_acc();
+		int search_accNum(int x);
+		int search_accPin(string x);
 		int main_menu();
 		void trans_menu(int x);
 		void save_Allacc();
@@ -388,6 +388,7 @@ int main(){
 	ATM A;
 	A.retrieve_acc();
 	string pin;
+	char  ch;
 	switch(A.main_menu()){
 		case 1:
 			A.reg_acc();
@@ -395,6 +396,13 @@ int main(){
 		case 2:
 			cout << "Enter Pin: "; 
 			cin >> pin;
+			for(i=0;i<4;i++){
+				ch = _getch();
+				pin += ch;
+				cout<<'*';
+			}
+			cout<<"/n";
+	}
 			if(A.search_accPin(pin)==-1){
 				cout << "INVALID PIN" << endl;
 				
