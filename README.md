@@ -14,24 +14,24 @@ Users can authenticate securely with a 4-digit PIN, check their balance, withdra
 
 ## _Features_ 🎉
 <ul>
-  <li><br>🔐 Secure User Authentication</li> 
+  <br><li>🔐 Secure User Authentication</li> 
       Users are required to enter a 4-digit PIN, which is securely encrypted for protection.
   
-  <li><br>💰 Balance Inquiry</li> 
+  <br><li>💰 Balance Inquiry</li> 
       Check the current balance of the account instantly.
 
-  <li><br>💸 Cash Withdrawal</li>
+  <br><li>💸 Cash Withdrawal</li>
       Withdraw cash while ensuring sufficient funds are available in the account.
 
-  <li><br>📥 Cash Deposit</li>
+  <br><li>📥 Cash Deposit</li>
       Easily deposit cash and update the account balance.
 
-  <li><br>💵 Fund Transfer</li>
+  <br><li>💵 Fund Transfer</li>
       Transfer funds between accounts quickly and securely.
 
-  <li><br>🔑 Change PIN</li>
+  <br><li>🔑 Change PIN</li>
       Update your PIN for enhanced security.
 
-  <li><br>🔚 Session Exit</li>
+  <br><li>🔚 Session Exit</li>
       End the session securely when finished.
   </ul>
